@@ -11,6 +11,14 @@ const compat = new FlatCompat({
 
 const eslintConfig = [
   ...compat.extends("next/core-web-vitals", "next/typescript"),
+  {
+    rules: {
+      // ביטול אזהרה על שימוש בתווים לא מקודדים (לדוגמה, `'` ב-JSX)
+      "react/no-unescaped-entities": "off",
+      // ביטול אזהרה על שימוש בממשקים ריקים
+      "@typescript-eslint/no-empty-object-type": "off",
+    },
+  },
 ];
 
 export default eslintConfig;
