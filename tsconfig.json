@@ -4,9 +4,8 @@
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": false, // שנה מ-true ל-false
     "noEmit": true,
-    "noEmitOnError": false,
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
@@ -14,7 +13,7 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "incremental": true,
-    "noImplicitAny": false,
+    "noImplicitAny": false, // הוסף זאת
     "plugins": [
       {
         "name": "next"
