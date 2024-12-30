@@ -29,7 +29,7 @@ function GradingInterface() {
 
   const [selectedStudent, setSelectedStudent] = useState(null);
   const [savedFeedbacks, setSavedFeedbacks] = useState({});
-  // const [exportedData, setExportedData] = useState('');
+  const [exportedData, setExportedData] = useState('');
   const [exerciseName, setExerciseName] = useState('');
   const [grades, setGrades] = useState({
     functionality: '',
