@@ -15,8 +15,6 @@
     "jsx": "preserve",
     "incremental": true,
     "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
-    "ignoreDeprecations": "all",
     "plugins": [
       {
         "name": "next"
