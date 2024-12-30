@@ -218,38 +218,43 @@ function GradingInterface() {
     alert('התוכן הועתק ללוח. אנא פתח תוכנת עריכה (כמו Notepad), הדבק את התוכן ושמור עם סיומת .json');
   };
 
-  const handleFileImport = (event) => {
-    const file = event.target.files[0];
+  const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         try {
-          const importedData = JSON.parse(e.target.result);
-          if (importedData.savedFeedbacks) {
-            setSavedFeedbacks(importedData.savedFeedbacks);
-            setExerciseName(importedData.exerciseName || '');
-            setSelectedStudent(null);
-            setGrades({
-              functionality: '',
-              design: '',
-              cpp: '',
-              conventions: '',
-              git: '',
-              bonus: ''
-            });
-            setComments({
-              functionality: '',
-              design: '',
-              cpp: '',
-              conventions: '',
-              git: '',
-              general: ''
-            });
-            setFinalFeedback('');
-            setExportedData('');
-            event.target.value = '';
+          const result = e.target?.result;
+          if (typeof result === 'string') {
+            const importedData = JSON.parse(result);
+            if (importedData.savedFeedbacks) {
+              setSavedFeedbacks(importedData.savedFeedbacks);
+              setExerciseName(importedData.exerciseName || '');
+              setSelectedStudent(null);
+              setGrades({
+                functionality: '',
+                design: '',
+                cpp: '',
+                conventions: '',
+                git: '',
+                bonus: ''
+              });
+              setComments({
+                functionality: '',
+                design: '',
+                cpp: '',
+                conventions: '',
+                git: '',
+                general: ''
+              });
+              setFinalFeedback('');
+              setExportedData('');
+              event.target.value = '';
+            } else {
+              alert('קובץ לא תקין - מבנה הנתונים אינו תואם');
+            }
           } else {
-            alert('קובץ לא תקין - מבנה הנתונים אינו תואם');
+            alert('שגיאה בקריאת הקובץ');
           }
         } catch (error) {
           alert('שגיאה בטעינת הקובץ');
