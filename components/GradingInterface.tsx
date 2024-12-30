@@ -295,37 +295,45 @@ function GradingInterface() {
     document.body.removeChild(link);
   };
 
+  
   const handleFileImport = (event) => {
     const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
       reader.onload = (e) => {
         try {
-          const importedData = JSON.parse(e.target.result);
-          if (importedData.savedFeedbacks) {
-            setSavedFeedbacks(importedData.savedFeedbacks);
-            setExerciseName(importedData.exerciseName || '');
-            setSelectedStudent(null);
-            setGrades({
-              functionality: '',
-              design: '',
-              cpp: '',
-              conventions: '',
-              git: '',
-              bonus: ''
-            });
-            setComments({
-              functionality: '',
-              design: '',
-              cpp: '',
-              conventions: '',
-              git: '',
-              general: ''
-            });
-            setFinalFeedback('');
-            event.target.value = '';
+          const result = e.target.result;
+          
+          // Ensure that result is a string
+          if (typeof result === 'string') {
+            const importedData = JSON.parse(result);
+            if (importedData.savedFeedbacks) {
+              setSavedFeedbacks(importedData.savedFeedbacks);
+              setExerciseName(importedData.exerciseName || '');
+              setSelectedStudent(null);
+              setGrades({
+                functionality: '',
+                design: '',
+                cpp: '',
+                conventions: '',
+                git: '',
+                bonus: ''
+              });
+              setComments({
+                functionality: '',
+                design: '',
+                cpp: '',
+                conventions: '',
+                git: '',
+                general: ''
+              });
+              setFinalFeedback('');
+              event.target.value = '';
+            } else {
+              alert('קובץ לא תקין - מבנה הנתונים אינו תואם');
+            }
           } else {
-            alert('קובץ לא תקין - מבנה הנתונים אינו תואם');
+            alert('שגיאה בטעינת הקובץ');
           }
         } catch (error) {
           alert('שגיאה בטעינת הקובץ');
