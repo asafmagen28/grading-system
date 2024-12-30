@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -48,6 +48,56 @@ function GradingInterface() {
     general: ''
   });
   const [finalFeedback, setFinalFeedback] = useState('');
+
+  // Load data from localStorage on component mount
+  useEffect(() => {
+    const loadFromStorage = () => {
+      try {
+        const storedExerciseName = localStorage.getItem('exerciseName');
+        const storedFeedbacks = localStorage.getItem('savedFeedbacks');
+        
+        if (storedExerciseName) {
+          setExerciseName(storedExerciseName);
+        }
+        
+        if (storedFeedbacks) {
+          setSavedFeedbacks(JSON.parse(storedFeedbacks));
+        }
+      } catch (error) {
+        console.error('Error loading from localStorage:', error);
+      }
+    };
+
+    loadFromStorage();
+  }, []);
+
+  // Save to localStorage whenever relevant data changes
+  // Save current student data whenever grades or comments change
+  useEffect(() => {
+    if (selectedStudent) {
+      const feedback = generateFeedback();
+      const newFeedbacks = {
+        ...savedFeedbacks,
+        [selectedStudent]: {
+          grades: {...grades},
+          comments: {...comments},
+          feedback
+        }
+      };
+      setSavedFeedbacks(newFeedbacks);
+      setFinalFeedback(feedback);
+    }
+  }, [grades, comments]);
+
+  // Save to localStorage whenever data changes
+  useEffect(() => {
+    try {
+      localStorage.setItem('exerciseName', exerciseName);
+      localStorage.setItem('savedFeedbacks', JSON.stringify(savedFeedbacks));
+    } catch (error) {
+      console.error('Error saving to localStorage:', error);
+    }
+  }, [exerciseName, savedFeedbacks]);
 
   const handleStudentSelect = (student) => {
     setSelectedStudent(student.name);
@@ -119,15 +169,43 @@ function GradingInterface() {
 
   const saveFeedback = () => {
     const feedback = generateFeedback();
-    setSavedFeedbacks(prev => ({
-      ...prev,
+    const newFeedbacks = {
+      ...savedFeedbacks,
       [selectedStudent]: {
         grades: {...grades},
         comments: {...comments},
         feedback
       }
-    }));
+    };
+    setSavedFeedbacks(newFeedbacks);
     setFinalFeedback(feedback);
+  };
+
+  const clearAllData = () => {
+    if (window.confirm('האם אתה בטוח שברצונך למחוק את כל הנתונים? פעולה זו בלתי הפיכה.')) {
+      localStorage.clear();
+      setSavedFeedbacks({});
+      setExerciseName('');
+      setSelectedStudent(null);
+      setGrades({
+        functionality: '',
+        design: '',
+        cpp: '',
+        conventions: '',
+        git: '',
+        bonus: ''
+      });
+      setComments({
+        functionality: '',
+        design: '',
+        cpp: '',
+        conventions: '',
+        git: '',
+        general: ''
+      });
+      setFinalFeedback('');
+      setExportedData('');
+    }
   };
 
   const handleGradeChange = (criterion, value) => {
@@ -145,46 +223,21 @@ function GradingInterface() {
 
   const copyFeedbackToClipboard = () => {
     try {
-      const textArea = document.createElement('textarea');
-      textArea.value = finalFeedback;
-      textArea.style.position = 'fixed';
-      textArea.style.opacity = '0';
-      document.body.appendChild(textArea);
-      textArea.select();
-      
-      document.execCommand('copy');
-      
-      document.body.removeChild(textArea);
+      navigator.clipboard.writeText(finalFeedback).catch(() => {
+        // Fallback for older browsers
+        const textArea = document.createElement('textarea');
+        textArea.value = finalFeedback;
+        textArea.style.position = 'fixed';
+        textArea.style.opacity = '0';
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      });
     } catch (error) {
       console.error('Error copying to clipboard:', error);
       alert('לא ניתן להעתיק למערכת ההפעלה - נא להעתיק ידנית');
     }
-  };
-
-  const exportFeedback = () => {
-    const exportData = {
-      exerciseName,
-      savedFeedbacks,
-      timestamp: new Date().toISOString(),
-      version: "1.0"
-    };
-    
-    const formattedData = JSON.stringify(exportData, null, 2);
-    setExportedData(formattedData);
-    
-    const fileName = exerciseName
-      ? `${exerciseName.replace(/\s+/g, '_')}_feedback.json`
-      : 'feedback.json';
-    
-    const blob = new Blob([formattedData], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = fileName;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    URL.revokeObjectURL(url);
   };
 
   const saveWithCustomName = () => {
@@ -218,43 +271,61 @@ function GradingInterface() {
     alert('התוכן הועתק ללוח. אנא פתח תוכנת עריכה (כמו Notepad), הדבק את התוכן ושמור עם סיומת .json');
   };
 
-  const handleFileImport = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+  const exportFeedback = () => {
+    const exportData = {
+      exerciseName,
+      savedFeedbacks,
+      timestamp: new Date().toISOString(),
+      version: "1.0"
+    };
+    
+    const formattedData = JSON.stringify(exportData, null, 2);
+    const fileName = exerciseName
+      ? `${exerciseName.replace(/\s+/g, '_')}_feedback.json`
+      : 'feedback.json';
+    
+    const blob = new Blob([formattedData], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    URL.revokeObjectURL(url);
+    document.body.removeChild(link);
+  };
+
+  const handleFileImport = (event) => {
+    const file = event.target.files[0];
     if (file) {
       const reader = new FileReader();
-      reader.onload = (e: ProgressEvent<FileReader>) => {
+      reader.onload = (e) => {
         try {
-          const result = e.target?.result;
-          if (typeof result === 'string') {
-            const importedData = JSON.parse(result);
-            if (importedData.savedFeedbacks) {
-              setSavedFeedbacks(importedData.savedFeedbacks);
-              setExerciseName(importedData.exerciseName || '');
-              setSelectedStudent(null);
-              setGrades({
-                functionality: '',
-                design: '',
-                cpp: '',
-                conventions: '',
-                git: '',
-                bonus: ''
-              });
-              setComments({
-                functionality: '',
-                design: '',
-                cpp: '',
-                conventions: '',
-                git: '',
-                general: ''
-              });
-              setFinalFeedback('');
-              setExportedData('');
-              event.target.value = '';
-            } else {
-              alert('קובץ לא תקין - מבנה הנתונים אינו תואם');
-            }
+          const importedData = JSON.parse(e.target.result);
+          if (importedData.savedFeedbacks) {
+            setSavedFeedbacks(importedData.savedFeedbacks);
+            setExerciseName(importedData.exerciseName || '');
+            setSelectedStudent(null);
+            setGrades({
+              functionality: '',
+              design: '',
+              cpp: '',
+              conventions: '',
+              git: '',
+              bonus: ''
+            });
+            setComments({
+              functionality: '',
+              design: '',
+              cpp: '',
+              conventions: '',
+              git: '',
+              general: ''
+            });
+            setFinalFeedback('');
+            event.target.value = '';
           } else {
-            alert('שגיאה בקריאת הקובץ');
+            alert('קובץ לא תקין - מבנה הנתונים אינו תואם');
           }
         } catch (error) {
           alert('שגיאה בטעינת הקובץ');
@@ -287,63 +358,70 @@ function GradingInterface() {
       </Card>
 
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-      <Card className="md:col-span-1">
-        <CardHeader>
-        <CardTitle>רשימת חניכים</CardTitle>
-        <div className="flex gap-2 flex-wrap">
-            <Button 
-            variant="outline" 
-            onClick={exportFeedback} 
-            className="flex items-center gap-2 flex-1 min-w-[120px]"
-            >
-            <Download className="h-4 w-4" />
-            ייצוא משובים
-            </Button>
-            <Button 
-            variant="outline" 
-            onClick={saveWithCustomName} 
-            className="flex items-center gap-2 flex-1 min-w-[120px]"
-            >
-            <Save className="h-4 w-4" />
-            שמור בשם
-            </Button>
-            <div className="relative flex-1 min-w-[120px]">
-            <input
-                type="file"
-                accept=".json"
-                onChange={handleFileImport}
-                className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                title="בחר קובץ JSON לייבוא"
-            />
-            <Button 
+        <Card className="md:col-span-1">
+          <CardHeader>
+            <CardTitle>רשימת חניכים</CardTitle>
+            <div className="flex gap-2 flex-wrap">
+              <Button 
                 variant="outline" 
-                className="flex items-center gap-2 w-full"
-            >
-                <Upload className="h-4 w-4" />
-                ייבוא משובים
-            </Button>
+                onClick={exportFeedback} 
+                className="flex items-center gap-2 flex-1 min-w-[120px]"
+              >
+                <Download className="h-4 w-4" />
+                ייצוא לקובץ
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={saveWithCustomName} 
+                className="flex items-center gap-2 flex-1 min-w-[120px]"
+              >
+                <Save className="h-4 w-4" />
+                העתק JSON
+              </Button>
+              <div className="relative flex-1 min-w-[120px]">
+                <input
+                  type="file"
+                  accept=".json"
+                  onChange={handleFileImport}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  title="בחר קובץ JSON לייבוא"
+                />
+                <Button 
+                  variant="outline" 
+                  className="flex items-center gap-2 w-full"
+                >
+                  <Upload className="h-4 w-4" />
+                  ייבוא משובים
+                </Button>
+              </div>
+              <Button 
+                variant="outline" 
+                onClick={clearAllData}
+                className="flex items-center gap-2 flex-1 min-w-[120px]"
+              >
+                נקה הכל
+              </Button>
             </div>
-        </div>
-        </CardHeader>
-        <CardContent>
-        <div className="space-y-2">
-            {initialStudents.map((student) => (
-            <div 
-                key={student.id}
-                className={`p-2 rounded cursor-pointer hover:bg-gray-100 ${
-                selectedStudent === student.name ? 'bg-gray-100' : ''
-                }`}
-                onClick={() => handleStudentSelect(student)}
-            >
-                <div className="font-medium">{student.name}</div>
-                {savedFeedbacks[student.name] && 
-                <div className="text-sm text-gray-500">יש משוב שמור</div>
-                }
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-2">
+              {initialStudents.map((student) => (
+                <div 
+                  key={student.id}
+                  className={`p-2 rounded cursor-pointer hover:bg-gray-100 ${
+                    selectedStudent === student.name ? 'bg-gray-100' : ''
+                  }`}
+                  onClick={() => handleStudentSelect(student)}
+                >
+                  <div className="font-medium">{student.name}</div>
+                  {savedFeedbacks[student.name] && 
+                    <div className="text-sm text-gray-500">יש משוב שמור</div>
+                  }
+                </div>
+              ))}
             </div>
-            ))}
-        </div>
-        </CardContent>
-    </Card>
+          </CardContent>
+        </Card>
 
         {selectedStudent && (
           <div className="md:col-span-3 space-y-4">
