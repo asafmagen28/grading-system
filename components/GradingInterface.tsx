@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Copy, Download, Upload, Save } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 function GradingInterface() {
   const weights = {
@@ -345,195 +346,258 @@ function GradingInterface() {
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <Card className="mb-4">
-        <CardHeader>
-          <CardTitle>פרטי התרגיל</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="flex items-center gap-2">
-            <Label>שם התרגיל:</Label>
-            <Input
-              type="text"
-              value={exerciseName}
-              onChange={(e) => setExerciseName(e.target.value)}
-              placeholder="הזן את שם התרגיל"
-              className="max-w-md"
-              dir="rtl"
-            />
-          </div>
-        </CardContent>
-      </Card>
-
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card className="md:col-span-1">
-          <CardHeader>
-            <CardTitle>רשימת חניכים</CardTitle>
-            <div className="flex gap-2 flex-wrap">
-              <Button 
-                variant="outline" 
-                onClick={exportFeedback} 
-                className="flex items-center gap-2 flex-1 min-w-[120px]"
-              >
-                <Download className="h-4 w-4" />
-                ייצוא לקובץ
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={saveWithCustomName} 
-                className="flex items-center gap-2 flex-1 min-w-[120px]"
-              >
-                <Save className="h-4 w-4" />
-                העתק JSON
-              </Button>
-              <div className="relative flex-1 min-w-[120px]">
-                <input
-                  type="file"
-                  accept=".json"
-                  onChange={handleFileImport}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  title="בחר קובץ JSON לייבוא"
+    <div className="min-h-screen bg-gradient-to-br from-sky-50 via-white to-blue-50 p-6">
+      {/* Animated background elements */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-sky-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-100 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
+      </div>
+  
+      {/* Main content */}
+      <div className="relative max-w-[1400px] mx-auto">
+        {/* Exercise Details Card */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <Card className="mb-6 backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
+            <CardHeader className="border-b border-sky-100/20">
+              <CardTitle className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+                פרטי התרגיל
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center gap-2">
+                <Label className="text-sky-900">שם התרגיל:</Label>
+                <Input
+                  type="text"
+                  value={exerciseName}
+                  onChange={(e) => setExerciseName(e.target.value)}
+                  placeholder="הזן את שם התרגיל"
+                  className="max-w-md border-sky-200 focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-200 hover:border-sky-300"
+                  dir="rtl"
                 />
-                <Button 
-                  variant="outline" 
-                  className="flex items-center gap-2 w-full"
-                >
-                  <Upload className="h-4 w-4" />
-                  ייבוא משובים
-                </Button>
               </div>
-              <Button 
-                variant="outline" 
-                onClick={clearAllData}
-                className="flex items-center gap-2 flex-1 min-w-[120px]"
-              >
-                נקה הכל
-              </Button>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-2">
-              {initialStudents.map((student) => (
-                <div 
-                  key={student.id}
-                  className={`p-2 rounded cursor-pointer hover:bg-gray-100 ${
-                    selectedStudent === student.name ? 'bg-gray-100' : ''
-                  }`}
-                  onClick={() => handleStudentSelect(student)}
-                >
-                  <div className="font-medium">{student.name}</div>
-                  {savedFeedbacks[student.name] && 
-                    <div className="text-sm text-gray-500">יש משוב שמור</div>
-                  }
+            </CardContent>
+          </Card>
+        </motion.div>
+  
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+          {/* Students List */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.5, delay: 0.2 }}
+          >
+            <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
+              <CardHeader className="border-b border-sky-100/20">
+                <CardTitle className="text-xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+                  רשימת חניכים
+                </CardTitle>
+                <div className="flex gap-2 flex-wrap">
+                  <Button 
+                    variant="outline" 
+                    onClick={exportFeedback}
+                    className="flex items-center gap-2 text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                  >
+                    <Download className="h-4 w-4" />
+                    ייצוא לקובץ
+                  </Button>
+                  <Button 
+                    variant="outline" 
+                    onClick={saveWithCustomName}
+                    className="flex items-center gap-2 text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                  >
+                    <Save className="h-4 w-4" />
+                    העתק JSON
+                  </Button>
+                  <div className="relative flex-1 min-w-[120px]">
+                    <input
+                      type="file"
+                      accept=".json"
+                      onChange={handleFileImport}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      title="בחר קובץ JSON לייבוא"
+                    />
+                    <Button 
+                      variant="outline" 
+                      className="flex items-center gap-2 w-full text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                    >
+                      <Upload className="h-4 w-4" />
+                      ייבוא משובים
+                    </Button>
+                  </div>
+                  <Button 
+                    variant="outline" 
+                    onClick={clearAllData}
+                    className="flex items-center gap-2 text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                  >
+                    נקה הכל
+                  </Button>
                 </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-
-        {selectedStudent && (
-          <div className="md:col-span-3 space-y-4">
-            <Card>
-              <CardHeader>
-                <CardTitle>הזנת ציונים והערות - {selectedStudent}</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>ציונים</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {Object.entries({
-                        functionality: 'פונקציונאליות',
-                        design: 'Design',
-                        cpp: 'תכנות ב-C++',
-                        conventions: 'קונבנציות ותיעוד',
-                        git: 'עבודה עם Git',
-                        bonus: 'בונוס'
-                      }).map(([key, label]) => (
-                        <div key={key} className="space-y-1">
-                          <Label>{label}</Label>
-                          <div className="flex items-center gap-2">
-                            <Input
-                              type="text"
-                              value={grades[key]}
-                              onChange={e => handleGradeChange(key, e.target.value)}
-                              placeholder="הזן ציון (0-4)"
-                              className="flex-1"
-                            />
-                            <span className="text-sm text-gray-500">
-                              ({weights[key]} נק')
-                            </span>
-                          </div>
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>הערות</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      {Object.entries({
-                        functionality: 'הערות פונקציונאליות',
-                        design: 'הערות Design',
-                        cpp: 'הערות תכנות ב-C++',
-                        conventions: 'הערות קונבנציות ותיעוד',
-                        git: 'הערות עבודה עם Git',
-                        general: 'הערות כלליות'
-                      }).map(([key, label]) => (
-                        <div key={key}>
-                          <Label>{label}</Label>
-                          <Textarea
-                            value={comments[key]}
-                            onChange={e => handleCommentChange(key, e.target.value)}
-                            className="mt-1"
-                            dir="rtl"
-                          />
-                        </div>
-                      ))}
-                    </CardContent>
-                  </Card>
-                </div>
-
-                <div className="flex gap-2 mt-4">
-                  <Button onClick={saveFeedback} className="flex-1">
-                    שמור משוב
-                  </Button>
-                  {savedFeedbacks[selectedStudent] && (
-                    <Button 
-                      onClick={() => setFinalFeedback(savedFeedbacks[selectedStudent].feedback)} 
-                      variant="outline"
-                      className="flex-1"
+                <div className="space-y-2">
+                  {initialStudents.map((student) => (
+                    <motion.div
+                      key={student.id}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      className={`p-4 rounded-lg cursor-pointer transition-all duration-200
+                        ${selectedStudent === student.name 
+                          ? 'bg-gradient-to-r from-sky-100 to-blue-100 shadow-md selected-card' 
+                          : 'hover:bg-sky-50'}`}
+                      onClick={() => handleStudentSelect(student)}
                     >
-                      הצג משוב
-                    </Button>
-                  )}
-                  {finalFeedback && (
-                    <Button onClick={copyFeedbackToClipboard} variant="outline">
-                      <Copy className="h-4 w-4" />
-                    </Button>
-                  )}
+                      <div className="font-medium">{student.name}</div>
+                      {savedFeedbacks[student.name] && 
+                        <div className="text-sm text-sky-600 mt-1 flex items-center gap-2">
+                          <div className="w-2 h-2 rounded-full bg-sky-500"></div>
+                          יש משוב שמור
+                        </div>
+                      }
+                    </motion.div>
+                  ))}
                 </div>
               </CardContent>
             </Card>
-
-            {finalFeedback && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>משוב מסכם</CardTitle>
+          </motion.div>
+  
+          {/* Grading Area */}
+          {selectedStudent && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.5 }}
+              className="md:col-span-3 space-y-6"
+            >
+              <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
+                <CardHeader className="border-b border-sky-100/20">
+                  <CardTitle className="text-xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+                    הזנת ציונים והערות - {selectedStudent}
+                  </CardTitle>
                 </CardHeader>
-                <CardContent>
-                  <pre dir="rtl" className="whitespace-pre-wrap bg-gray-50 p-4 rounded-lg">
-                    {finalFeedback}
-                  </pre>
+                <CardContent className="p-6">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    {/* Grades Section */}
+                    <Card className="border border-sky-100 shadow-md hover:shadow-lg transition-all duration-300">
+                      <CardHeader className="bg-gradient-to-r from-sky-50 to-blue-50">
+                        <CardTitle className="text-lg font-semibold text-sky-900">ציונים</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4 p-4">
+                        {Object.entries({
+                          functionality: 'פונקציונאליות',
+                          design: 'Design',
+                          cpp: 'תכנות ב-C++',
+                          conventions: 'קונבנציות ותיעוד',
+                          git: 'עבודה עם Git',
+                          bonus: 'בונוס'
+                        }).map(([key, label]) => (
+                          <motion.div
+                            key={key}
+                            whileHover={{ scale: 1.01 }}
+                            className="space-y-1"
+                          >
+                            <Label className="text-sky-900">{label}</Label>
+                            <div className="flex items-center gap-2">
+                              <Input
+                                type="text"
+                                value={grades[key]}
+                                onChange={e => handleGradeChange(key, e.target.value)}
+                                placeholder="הזן ציון (0-4)"
+                                className="flex-1 border-sky-200 focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-200 hover:border-sky-300"
+                              />
+                              <span className="text-sm text-sky-600 font-medium">
+                                ({weights[key]} נק')
+                              </span>
+                            </div>
+                          </motion.div>
+                        ))}
+                      </CardContent>
+                    </Card>
+  
+                    {/* Comments Section */}
+                    <Card className="border border-sky-100 shadow-md hover:shadow-lg transition-all duration-300">
+                      <CardHeader className="bg-gradient-to-r from-sky-50 to-blue-50">
+                        <CardTitle className="text-lg font-semibold text-sky-900">הערות</CardTitle>
+                      </CardHeader>
+                      <CardContent className="space-y-4 p-4">
+                        {Object.entries({
+                          functionality: 'הערות פונקציונאליות',
+                          design: 'הערות Design',
+                          cpp: 'הערות תכנות ב-C++',
+                          conventions: 'הערות קונבנציות ותיעוד',
+                          git: 'הערות עבודה עם Git',
+                          general: 'הערות כלליות'
+                        }).map(([key, label]) => (
+                          <motion.div key={key} whileHover={{ scale: 1.01 }}>
+                            <Label className="text-sky-900">{label}</Label>
+                            <Textarea
+                              value={comments[key]}
+                              onChange={e => handleCommentChange(key, e.target.value)}
+                              className="mt-1 border-sky-200 focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-200 hover:border-sky-300"
+                              dir="rtl"
+                            />
+                          </motion.div>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  </div>
+  
+                  {/* Action Buttons */}
+                  <div className="flex gap-2 mt-6">
+                    <Button 
+                      onClick={saveFeedback}
+                      className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                    >
+                      שמור משוב
+                    </Button>
+                    {savedFeedbacks[selectedStudent] && (
+                      <Button 
+                        onClick={() => setFinalFeedback(savedFeedbacks[selectedStudent].feedback)}
+                        variant="outline"
+                        className="flex-1 text-sky-600 hover:bg-sky-50 transition-all duration-300"
+                      >
+                        הצג משוב
+                      </Button>
+                    )}
+                    {finalFeedback && (
+                      <Button 
+                        onClick={copyFeedbackToClipboard}
+                        variant="outline"
+                        className="text-sky-600 hover:bg-sky-50 transition-all duration-300"
+                      >
+                        <Copy className="h-4 w-4" />
+                      </Button>
+                    )}
+                  </div>
                 </CardContent>
               </Card>
-            )}
-          </div>
-        )}
+  
+              {/* Final Feedback Section */}
+              {finalFeedback && (
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
+                    <CardHeader className="border-b border-sky-100/20">
+                      <CardTitle className="text-xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
+                        משוב מסכם
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <pre dir="rtl" className="whitespace-pre-wrap bg-gradient-to-r from-sky-50/50 to-blue-50/50 p-6 rounded-lg text-sky-900 shadow-inner">
+                        {finalFeedback}
+                      </pre>
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              )}
+            </motion.div>
+          )}
+        </div>
       </div>
     </div>
   );
