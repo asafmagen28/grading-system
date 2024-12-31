@@ -354,15 +354,15 @@ function GradingInterface() {
       </div>
   
       {/* Main content */}
-      <div className="relative max-w-[1400px] mx-auto">
+      <div className="relative">
         {/* Exercise Details Card */}
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          <Card className="mb-6 backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg hover:shadow-xl transition-all duration-300">
-            <CardHeader className="border-b border-sky-100/20">
+          <Card className="mb-6 backdrop-blur-lg bg-white/80 border border-white/20 shadow-lg">
+            <CardHeader>
               <CardTitle className="text-2xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
                 פרטי התרגיל
               </CardTitle>
@@ -375,7 +375,7 @@ function GradingInterface() {
                   value={exerciseName}
                   onChange={(e) => setExerciseName(e.target.value)}
                   placeholder="הזן את שם התרגיל"
-                  className="max-w-md border-sky-200 focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-200 hover:border-sky-300"
+                  className="max-w-md"
                   dir="rtl"
                 />
               </div>
@@ -390,24 +390,24 @@ function GradingInterface() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.5, delay: 0.2 }}
           >
-            <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
-              <CardHeader className="border-b border-sky-100/20">
+            <Card className="backdrop-blur-lg bg-white/80 border border-white/20 shadow-lg">
+              <CardHeader>
                 <CardTitle className="text-xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
                   רשימת חניכים
                 </CardTitle>
                 <div className="flex gap-2 flex-wrap">
                   <Button 
                     variant="outline" 
-                    onClick={exportFeedback}
-                    className="flex items-center gap-2 text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                    onClick={exportFeedback} 
+                    className="flex items-center gap-2 flex-1 min-w-[120px] text-sky-700 hover:bg-sky-50 transition-all duration-300"
                   >
                     <Download className="h-4 w-4" />
                     ייצוא לקובץ
                   </Button>
                   <Button 
                     variant="outline" 
-                    onClick={saveWithCustomName}
-                    className="flex items-center gap-2 text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                    onClick={saveWithCustomName} 
+                    className="flex items-center gap-2 flex-1 min-w-[120px] text-sky-700 hover:bg-sky-50 transition-all duration-300"
                   >
                     <Save className="h-4 w-4" />
                     העתק JSON
@@ -431,7 +431,7 @@ function GradingInterface() {
                   <Button 
                     variant="outline" 
                     onClick={clearAllData}
-                    className="flex items-center gap-2 text-sky-700 hover:bg-sky-50 transition-all duration-300"
+                    className="flex items-center gap-2 flex-1 min-w-[120px] text-sky-700 hover:bg-sky-50 transition-all duration-300"
                   >
                     נקה הכל
                   </Button>
@@ -443,9 +443,9 @@ function GradingInterface() {
                     <motion.div
                       key={student.id}
                       whileHover={{ scale: 1.02, x: 5 }}
-                      className={`p-4 rounded-lg cursor-pointer transition-all duration-200
+                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200
                         ${selectedStudent === student.name 
-                          ? 'bg-gradient-to-r from-sky-100 to-blue-100 shadow-md selected-card' 
+                          ? 'bg-sky-100 text-sky-900' 
                           : 'hover:bg-sky-50'}`}
                       onClick={() => handleStudentSelect(student)}
                     >
@@ -471,20 +471,20 @@ function GradingInterface() {
               transition={{ duration: 0.5 }}
               className="md:col-span-3 space-y-6"
             >
-              <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
-                <CardHeader className="border-b border-sky-100/20">
+              <Card className="backdrop-blur-lg bg-white/80 border border-white/20 shadow-lg">
+                <CardHeader>
                   <CardTitle className="text-xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
                     הזנת ציונים והערות - {selectedStudent}
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="p-6">
+                <CardContent>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {/* Grades Section */}
-                    <Card className="border border-sky-100 shadow-md hover:shadow-lg transition-all duration-300">
+                    <Card className="border border-sky-100">
                       <CardHeader className="bg-gradient-to-r from-sky-50 to-blue-50">
                         <CardTitle className="text-lg font-semibold text-sky-900">ציונים</CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-4 p-4">
+                      <CardContent className="space-y-4">
                         {Object.entries({
                           functionality: 'פונקציונאליות',
                           design: 'Design',
@@ -505,9 +505,9 @@ function GradingInterface() {
                                 value={grades[key]}
                                 onChange={e => handleGradeChange(key, e.target.value)}
                                 placeholder="הזן ציון (0-4)"
-                                className="flex-1 border-sky-200 focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-200 hover:border-sky-300"
+                                className="flex-1"
                               />
-                              <span className="text-sm text-sky-600 font-medium">
+                              <span className="text-sm text-sky-600">
                                 ({weights[key]} נק')
                               </span>
                             </div>
@@ -517,11 +517,11 @@ function GradingInterface() {
                     </Card>
   
                     {/* Comments Section */}
-                    <Card className="border border-sky-100 shadow-md hover:shadow-lg transition-all duration-300">
+                    <Card className="border border-sky-100">
                       <CardHeader className="bg-gradient-to-r from-sky-50 to-blue-50">
                         <CardTitle className="text-lg font-semibold text-sky-900">הערות</CardTitle>
                       </CardHeader>
-                      <CardContent className="space-y-4 p-4">
+                      <CardContent className="space-y-4">
                         {Object.entries({
                           functionality: 'הערות פונקציונאליות',
                           design: 'הערות Design',
@@ -535,7 +535,7 @@ function GradingInterface() {
                             <Textarea
                               value={comments[key]}
                               onChange={e => handleCommentChange(key, e.target.value)}
-                              className="mt-1 border-sky-200 focus:ring-2 focus:ring-sky-400 focus:border-transparent transition-all duration-200 hover:border-sky-300"
+                              className="mt-1"
                               dir="rtl"
                             />
                           </motion.div>
@@ -546,17 +546,17 @@ function GradingInterface() {
   
                   {/* Action Buttons */}
                   <div className="flex gap-2 mt-6">
-                    <Button 
-                      onClick={saveFeedback}
-                      className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white transition-all duration-300 shadow-md hover:shadow-lg"
-                    >
-                      שמור משוב
-                    </Button>
+                  <Button 
+                    onClick={saveFeedback}
+                    className="flex-1 bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-600 hover:to-blue-700 text-white transition-all duration-300 shadow-md hover:shadow-lg"
+                  >
+                    שמור משוב
+                  </Button>
                     {savedFeedbacks[selectedStudent] && (
                       <Button 
                         onClick={() => setFinalFeedback(savedFeedbacks[selectedStudent].feedback)}
                         variant="outline"
-                        className="flex-1 text-sky-600 hover:bg-sky-50 transition-all duration-300"
+                        className="flex-1"
                       >
                         הצג משוב
                       </Button>
@@ -565,7 +565,6 @@ function GradingInterface() {
                       <Button 
                         onClick={copyFeedbackToClipboard}
                         variant="outline"
-                        className="text-sky-600 hover:bg-sky-50 transition-all duration-300"
                       >
                         <Copy className="h-4 w-4" />
                       </Button>
@@ -581,14 +580,14 @@ function GradingInterface() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <Card className="backdrop-blur-lg bg-white/90 border border-white/20 shadow-lg">
-                    <CardHeader className="border-b border-sky-100/20">
+                  <Card className="backdrop-blur-lg bg-white/80 border border-white/20 shadow-lg">
+                    <CardHeader>
                       <CardTitle className="text-xl font-bold bg-gradient-to-r from-sky-600 to-blue-600 bg-clip-text text-transparent">
                         משוב מסכם
                       </CardTitle>
                     </CardHeader>
                     <CardContent>
-                      <pre dir="rtl" className="whitespace-pre-wrap bg-gradient-to-r from-sky-50/50 to-blue-50/50 p-6 rounded-lg text-sky-900 shadow-inner">
+                      <pre dir="rtl" className="whitespace-pre-wrap bg-sky-50 p-4 rounded-lg text-sky-900">
                         {finalFeedback}
                       </pre>
                     </CardContent>
