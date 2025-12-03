@@ -18,7 +18,6 @@ function GradingInterface() {
   };
 
   const initialStudents = [
-    { id: 1, name: 'גיל מקדש' },
     { id: 2, name: 'אדם גרין' },
     { id: 3, name: 'אוריאן פרניק' },
     { id: 4, name: 'נועם מדיוני' },
@@ -26,7 +25,6 @@ function GradingInterface() {
     { id: 6, name: 'נועם קרוצ׳י' },
     { id: 7, name: 'איליי שטרית' },
     { id: 8, name: 'אלה נגאוקר' },
-    { id: 9, name: 'בן שפטיבאן' },
     { id:10, name: 'אראל וולוב' },
     { id:11, name: 'עידו ליברמן' },
     { id:12, name: 'עידו אלישע' },
@@ -229,12 +227,13 @@ function GradingInterface() {
     setComments(prev => ({ ...prev, [criterion]: value }));
   };
 
-  const copyFeedbackToClipboard = () => {
+  const copyFeedbackToClipboard = (feedback = null) => {
+    const textToCopy = feedback || finalFeedback;
     try {
-      navigator.clipboard.writeText(finalFeedback).catch(() => {
+      navigator.clipboard.writeText(textToCopy).catch(() => {
         // Fallback for older browsers
         const textArea = document.createElement('textarea');
-        textArea.value = finalFeedback;
+        textArea.value = textToCopy;
         textArea.style.position = 'fixed';
         textArea.style.opacity = '0';
         document.body.appendChild(textArea);
@@ -450,19 +449,37 @@ function GradingInterface() {
                     <motion.div
                       key={student.id}
                       whileHover={{ scale: 1.02, x: 5 }}
-                      className={`p-3 rounded-lg cursor-pointer transition-all duration-200
-                        ${selectedStudent === student.name 
-                          ? 'bg-sky-100 text-sky-900' 
+                      className={`p-3 rounded-lg transition-all duration-200 flex items-center justify-between gap-2
+                        ${selectedStudent === student.name
+                          ? 'bg-sky-100 text-sky-900'
                           : 'hover:bg-sky-50'}`}
-                      onClick={() => handleStudentSelect(student)}
                     >
-                      <div className="font-medium">{student.name}</div>
-                      {savedFeedbacks[student.name] && 
-                        <div className="text-sm text-sky-600 mt-1 flex items-center gap-2">
-                          <div className="w-2 h-2 rounded-full bg-sky-500"></div>
-                          יש משוב שמור
-                        </div>
-                      }
+                      <div
+                        className="flex-1 cursor-pointer"
+                        onClick={() => handleStudentSelect(student)}
+                      >
+                        <div className="font-medium">{student.name}</div>
+                        {savedFeedbacks[student.name] &&
+                          <div className="text-sm text-sky-600 mt-1 flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-sky-500"></div>
+                            יש משוב שמור
+                          </div>
+                        }
+                      </div>
+                      {savedFeedbacks[student.name] && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            copyFeedbackToClipboard(savedFeedbacks[student.name].feedback);
+                          }}
+                          className="h-8 w-8 p-0 hover:bg-sky-200"
+                          title="העתק משוב"
+                        >
+                          <Copy className="h-4 w-4 text-sky-600" />
+                        </Button>
+                      )}
                     </motion.div>
                   ))}
                 </div>
