@@ -468,7 +468,7 @@ function GradingInterface() {
                       </div>
                       {savedFeedbacks[student.name] && (
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
